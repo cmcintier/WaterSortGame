@@ -2,7 +2,7 @@ import pygame
 import random as r
 from sys import exit
 
-COLOR_LIST = ["red", "orange", "yellow", "green", "blue", "purple"," pink", "navy"]
+COLOR_LIST = ["red", "orange", "yellow", "dark green", "blue", "indigo", "violet"," pink", "navy", "teal"]
 
 class Color(pygame.sprite.Sprite):
     def __init__(self, color, parentTube, fillLevel):
@@ -10,8 +10,8 @@ class Color(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface([50, 190/4])
         self.image.fill(color)
-        pygame.draw.rect(self.image, color, pygame.Rect(parentTube.rect.x+25, parentTube.rect.y + (190/4*fillLevel), 50, 190/4))
-        self.rect = self.image.get_rect(bottomleft = (parentTube.rect.x+25, parentTube.rect.y + (190/4*fillLevel)))
+        pygame.draw.rect(self.image, color, pygame.Rect(parentTube.rect.x + 25, parentTube.rect.y + (190/4*fillLevel), 50, 190/4))
+        self.rect = self.image.get_rect(bottomleft = (parentTube.rect.x + 25, parentTube.rect.y + (190/4*fillLevel)))
     
 class Button():
     def __init__(self, x, y, width, height, buttonText = "Button", onclickFunction=None):
@@ -46,7 +46,7 @@ class Tube(pygame.sprite.Sprite):
     def __init__(self, x, y, colorList = []):
         super().__init__()
         self.image = pygame.image.load("EmptyTube.png")
-        self.rect = self.image.get_rect(topleft = (x,y))
+        self.rect = pygame.Rect(x, y, 100, 200)
         self.selected = False
         self.colors = colorList
         self.colorGroup = pygame.sprite.Group()
@@ -109,10 +109,10 @@ def generatePuzzle(colorList):
                     color = allColors.pop(randChoice)
                 tubeColors.append(color)     
             
-            tube = Tube(screenWidth / numTubes * x + (screenWidth/4/ numTubes), 300, tubeColors)
+            tube = Tube(screenWidth / numTubes * x + (screenWidth/numTubes/6), 300, tubeColors)
             tubes.add(tube)
         else:
-            tube = Tube(screenWidth / numTubes * x + (screenWidth/4/ numTubes), 300, [])
+            tube = Tube(screenWidth / numTubes * x + (screenWidth/numTubes/6), 300, [])
             tubes.add(tube)   
     return tubes
 
@@ -156,8 +156,6 @@ while True:
     newPuzzle = False
 
     tubes.update()
-    
-
     #Handling pygame's event system
     events =  pygame.event.get()
     for event in events:
@@ -166,7 +164,9 @@ while True:
             pygame.quit()
             exit()
         # MOUSEBUTTONUP Event to check collisions
-        elif event.type == pygame.MOUSEBUTTONUP:
+        # elif event.type == pygame.MOUSEBUTTONUP:          
+        # MOUSEBUTTONDOWN Event to check player click input
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if generatePuzzleButton.rect.collidepoint(event.pos):
                 tubes = generatePuzzleButton.onclick(int(user_text))
             for tube in tubes:
@@ -187,8 +187,6 @@ while True:
                             pourColor(selectedTube, tube)
                         selectedTube.deselect()
                         selectedTube = None
-        # MOUSEBUTTONDOWN Event to check player click input
-        elif event.type == pygame.MOUSEBUTTONDOWN:
             if input_rect.collidepoint(event.pos):
                 active = True
             else:
